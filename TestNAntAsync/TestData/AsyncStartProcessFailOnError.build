@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<project default="Test">
+  <target name="Test">
+    <async exec="no.such.exe.no" commandline="localhost -n 1" failonerror="false">
+      <echo message="failonerror test" />
+    </async>
+  </target>
+</project>

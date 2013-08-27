@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<project default="Test">
+  <target name="Test">
+    <property name="testfile" value="temp_1234.tmp" />
+    <fail if="${file::exists(testfile)}" />
+
+    <async exec="ping" commandline="localhost -n 1" output="${testfile}">
+      <sleep seconds="2" />
+      <fail unless="${file::exists(testfile)}" />
+    </async>
+    <delete file="${testfile}" />
+  </target>
+</project>

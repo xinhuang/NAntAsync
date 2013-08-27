@@ -7,11 +7,24 @@ namespace TestNAntAsync
     [TestClass]
     public class IntegrationTest
     {
+        private AsyncTask _keepNAntAsyncTasksDllDeployed = new AsyncTask();
+
         [TestMethod]
-        public void TestMethod1()
+        public void AsyncCallingTarget()
         {
-            new AsyncTask();
             NAnt.Assert("AsyncCallingTarget.build");
+        }
+
+        [TestMethod]
+        public void AsyncStartProcess()
+        {
+            NAnt.Assert("AsyncStartProcess.build");
+        }
+
+        [TestMethod]
+        public void AsyncStartProcessFailOnError()
+        {
+            NAnt.Assert("AsyncStartProcessFailOnError.build");
         }
     }
 }

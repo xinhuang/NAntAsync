@@ -60,6 +60,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="TestData\AsyncCallingTarget.build" />
+    <None Include="TestData\AsyncStartProcess.build" />
+    <None Include="TestData\AsyncStartProcessFailOnError.build" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NAntAsync\NAntAsync.csproj">

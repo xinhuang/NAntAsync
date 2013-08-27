@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2997D334-33A2-4CE0-A010-8C9C23A2351D}"
 	ProjectSection(SolutionItems) = preProject
 		Integration.testsettings = Integration.testsettings
+		README.md = README.md
 	EndProjectSection
 EndProject
 Global
