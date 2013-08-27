@@ -44,6 +44,18 @@ namespace NAntAsync
         [TaskAttribute("output")]
         public string Output { get; set; }
 
+        [TaskAttribute("append")]
+        public bool Append { get; set; }
+
+        [TaskAttribute("resultproperty")]
+        public string ResultProperty { get; set; }
+
+        [TaskAttribute("workingdir")]
+        public string WorkingDir { get; set; }
+
+        [TaskAttribute("basedir")]
+        public string BaseDir { get; set; }
+
         protected override void ExecuteTask()
         {
             var asyncTask = StartAsyncTask();
@@ -51,6 +63,8 @@ namespace NAntAsync
             try
             {
                 asyncTask.Wait();
+                if (!string.IsNullOrWhiteSpace(ResultProperty))
+                    Project.Properties[ResultProperty] = asyncTask.Result.ToString();
             }
             catch (Exception)
             {
@@ -59,9 +73,9 @@ namespace NAntAsync
             }
         }
 
-        private Task StartAsyncTask()
+        private Task<int> StartAsyncTask()
         {
-            Task task;
+            Task<int> task;
             if (TryStartTargetAsync(out task))
                 return task;
             if (TryStartProcessAsync(out task))
@@ -69,7 +83,7 @@ namespace NAntAsync
             throw new ArgumentException("At least an asynchronous target or executable is expected.");
         }
 
-        private bool TryStartProcessAsync(out Task task)
+        private bool TryStartProcessAsync(out Task<int> task)
         {
             task = null;
             if (string.IsNullOrWhiteSpace(Exec))
@@ -79,14 +93,14 @@ namespace NAntAsync
             {
                 StartInfo =
                 {
-                    FileName = Exec,
+                    FileName = GetImagePath(BaseDir, Exec),
                     UseShellExecute = false,
                     RedirectStandardError = true,
                     RedirectStandardInput = true,
                     RedirectStandardOutput = true,
                     CreateNoWindow = true,
                     Arguments = CommandLine,
-                    WorkingDirectory = Environment.CurrentDirectory,
+                    WorkingDirectory = WorkingDir,
                 },
                 EnableRaisingEvents = true,
             };
@@ -105,6 +119,13 @@ namespace NAntAsync
             return true;
         }
 
+        private string GetImagePath(string baseDir, string exec)
+        {
+            if (string.IsNullOrWhiteSpace(baseDir))
+                return exec;
+            return Path.Combine(baseDir, exec);
+        }
+
         private void OnAsyncProcessExited(object sender, EventArgs e, TaskCompletionSource<int> source)
         {
             var process = sender as Process;
@@ -112,19 +133,33 @@ namespace NAntAsync
             source.SetResult(process.ExitCode);
             if (string.IsNullOrWhiteSpace(Output))
                 return;
-            File.WriteAllText(Output, process.StandardOutput.ReadToEnd());
+            if (!Append)
+            {
+                File.WriteAllText(Output, process.StandardOutput.ReadToEnd());
+            }
+            else
+            {
+                using (var ostream = File.AppendText(Output))
+                {
+                    ostream.Write(process.StandardOutput.ReadToEnd());
+                }
+            }
         }
 
-        private bool TryStartTargetAsync(out Task task)
+        private bool TryStartTargetAsync(out Task<int> task)
         {
             task = null;
-            Target target = null;
-            if (!string.IsNullOrWhiteSpace(Target))
-                target = Project.Targets.Find(Target);
-            if (target == null)
+            if (string.IsNullOrWhiteSpace(Target))
                 return false;
+            Target target = Project.Targets.Find(Target);
+            if (target == null)
+                throw new ArgumentException("Cannot find target named `" + Target + "'.");
 
-            task = new Task(() => target.Execute());
+            task = new Task<int>(() =>
+            {
+                target.Execute();
+                return 0;
+            });
             task.Start();
             return true;
         }
