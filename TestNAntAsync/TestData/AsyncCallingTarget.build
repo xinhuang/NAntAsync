@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<project default="Test">
+  
+  <property name="async.flag" value="off" />
+  
+  <target name="Test">
+    <async target="sleep">
+      <fail unless="${async.flag == 'off'}" />
+      <sleep seconds="2" />
+      <fail unless="${async.flag == 'on'}" />
+    </async>
+  </target>
+
+  <target name="sleep">
+    <sleep seconds="1" />
+    <property name="async.flag" value="on" />
+  </target>
+</project>
