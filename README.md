@@ -24,6 +24,7 @@ NAntAsync is a NAnt custom task to execute NAnt target or external program async
 ## TODO
 
 * Support for `<await>`
+* `<parallel> task
 
 ## License
 
