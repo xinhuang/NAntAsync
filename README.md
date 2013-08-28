@@ -14,7 +14,7 @@
 
 NAntAsync is a NAnt custom task to execute NAnt target or external program asynchronously.
 
-*Beware when assign NAnt property asynchronously. Unexpected race condition might happen since NAnt is not prepared for concurrent execution.*
+*Beware when assign to a NAnt property asynchronously, unexpected race condition may happen because NAnt is not prepared for concurrent execution.*
 
 ## Feature
 
@@ -24,7 +24,7 @@ NAntAsync is a NAnt custom task to execute NAnt target or external program async
 ## TODO
 
 * Support for `<await>`
-* `<parallel> task
+* `<parallel>` task
 
 ## License
 
